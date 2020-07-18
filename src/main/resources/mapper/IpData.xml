@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lowi.admin.dao.IpDataDao">
+
+    <insert id="batchInert" parameterType="java.util.List">
+        INSERT INTO ip_data (province, city, operator, ip_start, ip_end, ip_scope_start, ip_scope_end, create_time)
+        VALUES
+        <foreach collection="list" item="ipData" separator=",">
+            (#{ipData.province},#{ipData.city},#{ipData.operator},#{ipData.ipStart},#{ipData.ipEnd},#{ipData.ipScopeStart},#{ipData.ipScopeEnd},#{ipData.createTime})
+        </foreach>
+    </insert>
+
+    <select id="getIpAddr" resultType="com.lowi.admin.entity.IpData">
+        SELECT * FROM ip_data a WHERE a.ip_scope_start &lt;= #{ip} AND a.ip_scope_end &gt;= #{ip}
+        ORDER BY a.ip_scope_start DESC
+    </select>
+</mapper>
