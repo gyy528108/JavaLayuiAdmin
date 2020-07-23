@@ -68,13 +68,6 @@ public class UserController {
         if (errors.hasErrors()) {
             return Result.getError(errors);
         }
-        Result responseResult = new Result();
-        boolean loginValida = LoginValidaUtils.loginValida(userDto.getToken());
-        if (!loginValida) {
-            responseResult.setCode(1);
-            responseResult.setMsg("请登录");
-            return responseResult;
-        }
         return userService.openAccount(userDto);
     }
 
@@ -86,12 +79,6 @@ public class UserController {
             responseResult.setMsg("请登录");
             return responseResult;
         }
-        boolean loginValida = LoginValidaUtils.loginValida(token);
-        if (!loginValida) {
-            responseResult.setCode(1);
-            responseResult.setMsg("请登录");
-            return responseResult;
-        }
         return userService.getUserList(token, page, limit, phone, userName);
     }
 
@@ -99,13 +86,6 @@ public class UserController {
     public Result editPassword(@RequestBody @Validated(UserGroup.editPassword.class) UserDto userDto, Errors errors) {
         if (errors.hasErrors()) {
             return Result.getError(errors);
-        }
-        Result responseResult = new Result();
-        boolean loginValida = LoginValidaUtils.loginValida(userDto.getToken());
-        if (!loginValida) {
-            responseResult.setCode(1);
-            responseResult.setMsg("请登录");
-            return responseResult;
         }
         return userService.editPassword(userDto);
     }
@@ -163,8 +143,7 @@ public class UserController {
     @RequestMapping("/getUserLoginLog")
     public Result getUserLoginLog(String token, Integer page, Integer limit) {
         Result responseResult = new Result();
-        boolean loginValida = LoginValidaUtils.loginValida(token);
-        if (!loginValida) {
+        if (token == null) {
             responseResult.setCode(1);
             responseResult.setMsg("请登录");
             return responseResult;
@@ -174,9 +153,8 @@ public class UserController {
 
     @RequestMapping("/pageInit")
     public Result<Map<String, Object>> pageInit(@RequestBody UserDto userDto) {
-        Result<Map<String, Object>> responseResult = new Result();
-        boolean loginValida = LoginValidaUtils.loginValida(userDto.getToken());
-        if (!loginValida) {
+        Result<Map<String, Object>> responseResult = new Result<Map<String, Object>>();
+        if (userDto.getToken() == null) {
             responseResult.setCode(1);
             responseResult.setMsg("请登录");
             return responseResult;
@@ -324,13 +302,6 @@ public class UserController {
 
     @RequestMapping("/logout")
     public Result logout(@RequestBody UserDto userDto) {
-        Result responseResult = new Result();
-        boolean loginValida = LoginValidaUtils.loginValida(userDto.getToken());
-        if (!loginValida) {
-            responseResult.setCode(0);
-            responseResult.setMsg("成功");
-            return responseResult;
-        }
         return userService.logout(userDto.getToken());
     }
 

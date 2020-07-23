@@ -14,6 +14,7 @@ import com.lowi.admin.entity.IpData;
 import com.lowi.admin.entity.LoginLog;
 import com.lowi.admin.entity.User;
 import com.lowi.admin.pojo.dto.UserDto;
+import com.lowi.admin.pojo.vo.UserVo;
 import com.lowi.admin.utils.Md5Utils;
 import com.lowi.admin.utils.Result;
 import com.lowi.admin.utils.SendMailUtils;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * UserService.java
@@ -305,10 +307,16 @@ public class UserService {
     }
 
     public Result<Map<String, Object>> pageInit(String token) {
+        Result<Map<String, Object>> responseResult = new Result();
         String userInfo = stringRedisTemplate.opsForValue().get(token);
+        if(userInfo==null){
+            responseResult.setCode(1);
+            responseResult.setMsg("请登录");
+            return responseResult;
+        }
         User userVo = JSONUtil.toBean(userInfo, User.class);
         Map<String, Object> map = new HashMap<>();
-        Result<Map<String, Object>> responseResult = new Result();
+
         map.put("name", userVo.getUsername());
         if (userVo.getParentId() == 0) {
             map.put("admin", true);
@@ -338,10 +346,11 @@ public class UserService {
         queryWrapper.select().eq("parent_id",userVo.getId()).orderByDesc("create_time");
         Page<User> pageInfo = new Page<>(page, limit);
         IPage<User> userIPage = userDao.selectPage(pageInfo, queryWrapper);
+        List<UserVo> userVos = userIPage.getRecords().stream().map(user -> UserVo.fromVo(user)).collect(Collectors.toList());
         Result responseResult = new Result();
         responseResult.setCode(0);
         responseResult.setMsg("获取成功");
-        responseResult.setData(userIPage.getRecords());
+        responseResult.setData(userVos);
         responseResult.setCount((int) userIPage.getTotal());
         return responseResult;
     }

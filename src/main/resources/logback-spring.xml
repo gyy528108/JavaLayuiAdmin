@@ -13,9 +13,9 @@
 
     <!-- INFO级别日志输出 -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/fenlihouduan_info.log</file>
+        <file>${LOG_PATH}/javaLayuiAdmin_info.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/fenlihouduan_info.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/javaLayuiAdmin_info.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
@@ -28,9 +28,9 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
-        <file>${LOG_PATH}/fenlihouduan_error.log</file>
+        <file>${LOG_PATH}/javaLayuiAdmin_error.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/fenlihouduan_error.%d{yyyy-MM-dd}.log.%i</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/javaLayuiAdmin_error.%d{yyyy-MM-dd}.log.%i</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>500MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>

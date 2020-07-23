@@ -4,6 +4,17 @@ spring:
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    port: 6379
+    password: 123456
+    host: localhost
+#    elasticsearch:
+#      rest:
+#        uris: 10.10.10.162:9200
+management:
+  endpoint:
+    health:
+      show-details: always
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
   type-aliases-package: com.lowi.admin.entity
@@ -13,5 +24,7 @@ mybatis-plus:
       column-like: true
 
 
+localhostUrl: http://localhost:8122
 
-localhostUrl: http://192.168.66.128:8122
+#elasticsearchServerUrl: 10.10.10.162
+#elasticsearchServerPort: 9200

@@ -24,7 +24,6 @@ mybatis-plus:
       column-like: true
 
 
-
 localhostUrl: http://localhost:8122
 
 #elasticsearchServerUrl: 10.10.10.162
