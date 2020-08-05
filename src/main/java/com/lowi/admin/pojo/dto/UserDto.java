@@ -27,9 +27,9 @@ public class UserDto {
     @Size(groups = {UserGroup.UserRegister.class, UserGroup.UserOpenAccount.class}, min = 1, message = "用户名称1-6个字符")
     @Size(groups = {UserGroup.UserRegister.class, UserGroup.UserOpenAccount.class}, max = 6, message = "用户名称1-6个字符")
     private String userName;
-    @NotNull(groups = {UserGroup.UserRegister.class, UserGroup.UserLogin.class, UserGroup.UserOpenAccount.class, UserGroup.editPassword.class}, message = "用户密码不能为空")
-    @Size(groups = {UserGroup.UserRegister.class, UserGroup.UserLogin.class, UserGroup.UserOpenAccount.class, UserGroup.editPassword.class}, min = 6, message = "用户密码6-16个字符")
-    @Size(groups = {UserGroup.UserRegister.class, UserGroup.UserLogin.class, UserGroup.UserOpenAccount.class, UserGroup.editPassword.class}, max = 16, message = "用户密码6-16个字符")
+    @NotNull(groups = {UserGroup.UserRegister.class, UserGroup.UserLogin.class, UserGroup.UserOpenAccount.class, UserGroup.EditPassword.class}, message = "用户密码不能为空")
+    @Size(groups = {UserGroup.UserRegister.class, UserGroup.UserLogin.class, UserGroup.UserOpenAccount.class, UserGroup.EditPassword.class}, min = 6, message = "用户密码6-16个字符")
+    @Size(groups = {UserGroup.UserRegister.class, UserGroup.UserLogin.class, UserGroup.UserOpenAccount.class, UserGroup.EditPassword.class}, max = 16, message = "用户密码6-16个字符")
     private String password;
     @NotNull(groups = {UserGroup.UserRegister.class, UserGroup.UserLogin.class, UserGroup.UserOpenAccount.class}, message = "手机号不能为空")
     @Pattern(groups = {UserGroup.UserRegister.class, UserGroup.UserLogin.class, UserGroup.UserOpenAccount.class}, regexp = "1[0-9]{10,}", message = "手机号格式错误")
@@ -44,15 +44,35 @@ public class UserDto {
     private Integer limit;
     @NotNull(groups = {UserGroup.UserOpenAccount.class}, message = "token不能为空")
     private String token;
-    @NotNull(groups = {UserGroup.editPassword.class}, message = "新密码不能为空")
-    @Size(groups = {UserGroup.editPassword.class}, min = 6, message = "用户密码6-16个字符")
-    @Size(groups = {UserGroup.editPassword.class}, max = 16, message = "用户密码6-16个字符")
+    @NotNull(groups = {UserGroup.EditPassword.class}, message = "新密码不能为空")
+    @Size(groups = {UserGroup.EditPassword.class}, min = 6, message = "用户密码6-16个字符")
+    @Size(groups = {UserGroup.EditPassword.class}, max = 16, message = "用户密码6-16个字符")
     private String newPassword;
-    @Size(groups = {UserGroup.editPassword.class}, min = 6, message = "用户密码6-16个字符")
-    @Size(groups = {UserGroup.editPassword.class}, max = 16, message = "用户密码6-16个字符")
-    @NotNull(groups = {UserGroup.editPassword.class}, message = "确认新密码不能为空")
+    @Size(groups = {UserGroup.EditPassword.class}, min = 6, message = "用户密码6-16个字符")
+    @Size(groups = {UserGroup.EditPassword.class}, max = 16, message = "用户密码6-16个字符")
+    @NotNull(groups = {UserGroup.EditPassword.class}, message = "确认新密码不能为空")
     private String againPassword;
     @Min(groups = {UserGroup.UserOpenAccount.class}, message = "性别请按规范输入", value = 1)
     @Min(groups = {UserGroup.UserOpenAccount.class}, message = "性别请按规范输入", value = 0)
     private Integer sex;
+
+    @Override
+    public String toString() {
+        return "UserDto{" +
+                "userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", validaCode='" + validaCode + '\'' +
+                ", email='" + email + '\'' +
+                ", loginIp='" + loginIp + '\'' +
+                ", lastLoginIp='" + lastLoginIp + '\'' +
+                ", id=" + id +
+                ", page=" + page +
+                ", limit=" + limit +
+                ", token='" + token + '\'' +
+                ", newPassword='" + newPassword + '\'' +
+                ", againPassword='" + againPassword + '\'' +
+                ", sex=" + sex +
+                '}';
+    }
 }

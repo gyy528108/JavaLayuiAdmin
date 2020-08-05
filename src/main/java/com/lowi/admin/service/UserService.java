@@ -59,7 +59,7 @@ public class UserService {
     public Result registerUser(UserDto userDto) {
         Result responseResult = new Result();
         String email = stringRedisTemplate.opsForValue().get(userDto.getEmail() + "_email");
-        if (email == null || email.equals("")) {
+        if (email == null || "".equals(email)) {
             responseResult.setCode(1);
             responseResult.setMsg("请发送验证码");
             return responseResult;
@@ -126,7 +126,7 @@ public class UserService {
                 if (province != null) {
                     ipAddr = province;
                 }
-                if (city != null && !city.equals("")) {
+                if (city != null && !"".equals(city)) {
                     ipAddr = ipAddr + "--" + city;
                 }
             }
@@ -149,7 +149,7 @@ public class UserService {
         stringRedisTemplate.opsForValue().set(token, str, 30, TimeUnit.MINUTES);
         stringRedisTemplate.opsForValue().set("userValida_" + userPo.getId(), String.valueOf(currentSeconds), 30, TimeUnit.MINUTES);
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>((int) (1 / 0.75) + 1);
         map.put("token", token);
         responseResult.setData(map);
         return responseResult;
@@ -309,7 +309,7 @@ public class UserService {
     public Result<Map<String, Object>> pageInit(String token) {
         Result<Map<String, Object>> responseResult = new Result();
         String userInfo = stringRedisTemplate.opsForValue().get(token);
-        if(userInfo==null){
+        if (userInfo == null) {
             responseResult.setCode(1);
             responseResult.setMsg("请登录");
             return responseResult;
@@ -343,7 +343,7 @@ public class UserService {
         if (userName != null) {
             queryWrapper.like("username", userName);
         }
-        queryWrapper.select().eq("parent_id",userVo.getId()).orderByDesc("create_time");
+        queryWrapper.select().eq("parent_id", userVo.getId()).orderByDesc("create_time");
         Page<User> pageInfo = new Page<>(page, limit);
         IPage<User> userIPage = userDao.selectPage(pageInfo, queryWrapper);
         List<UserVo> userVos = userIPage.getRecords().stream().map(user -> UserVo.fromVo(user)).collect(Collectors.toList());

@@ -83,7 +83,7 @@ public class UserController {
     }
 
     @RequestMapping("/editPassword")
-    public Result editPassword(@RequestBody @Validated(UserGroup.editPassword.class) UserDto userDto, Errors errors) {
+    public Result editPassword(@RequestBody @Validated(UserGroup.EditPassword.class) UserDto userDto, Errors errors) {
         if (errors.hasErrors()) {
             return Result.getError(errors);
         }

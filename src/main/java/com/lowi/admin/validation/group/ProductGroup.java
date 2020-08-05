@@ -14,6 +14,6 @@ package com.lowi.admin.validation.group;
  * @since : 2020/8/4 18:34
  */
 public interface ProductGroup {
-    interface insertProduct {
+    interface InsertProduct {
     }
 }

@@ -33,4 +33,12 @@ public class ProductVo extends Product {
         BeanUtils.copyProperties(product,productVo);
         return productVo;
     }
+
+    @Override
+    public String toString() {
+        return "ProductVo{" +
+                "twoCategoryStr='" + twoCategoryStr + '\'' +
+                ", oneCategoryStr='" + oneCategoryStr + '\'' +
+                '}';
+    }
 }

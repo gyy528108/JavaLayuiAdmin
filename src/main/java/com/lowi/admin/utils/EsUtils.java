@@ -30,7 +30,7 @@ public class EsUtils {
     private static RestHighLevelClient client;
 
     @PostConstruct
-    public void init() {
+    private void init() {
         client = this.restHighLevelClient;
     }
 

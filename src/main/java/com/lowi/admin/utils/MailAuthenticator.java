@@ -22,7 +22,7 @@ public class MailAuthenticator extends Authenticator {
 
     public MailAuthenticator() {
     }
-
+    @Override
     protected PasswordAuthentication getPasswordAuthentication() {
         return new PasswordAuthentication(USERNAME, PASSWORD);
     }

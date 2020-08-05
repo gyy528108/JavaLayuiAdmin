@@ -182,10 +182,10 @@ public class EsController {
                 long o1CreateTime = (long) o1.get("create_time");
                 long o2CreateTime = (long) o2.get("create_time");
                 long l = 0;
-                if (sort.toLowerCase().equals("desc")) {
+                if ("desc".toLowerCase().equals(sort)) {
                     l = o1CreateTime - o2CreateTime;
                 }
-                if (sort.toLowerCase().equals("asc")) {
+                if ("asc".toLowerCase().equals(sort)) {
                     l = o2CreateTime - o1CreateTime;
                 }
                 return (int) l;

@@ -65,6 +65,7 @@ public class InitTableController {
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setTypeConvert(new MySqlTypeConvert() {
+            @Override
             public DbColumnType processTypeConvert(GlobalConfig globalConfig, String fieldType) {
                 System.out.println("转换类型：" + fieldType);
                 //tinyint转换成Boolean

@@ -1,9 +1,11 @@
 package com.lowi.admin.controller;
 
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.lowi.admin.pojo.dto.ServiceResponse;
 import com.lowi.admin.pojo.vo.FeishuAccountVo;
+import com.lowi.admin.pojo.vo.ProductVo;
 import com.lowi.admin.utils.Result;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +34,12 @@ import java.nio.charset.Charset;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 
 /**
  * TestController.java
@@ -113,7 +121,7 @@ public class TestController {
                 String resContent = EntityUtils.toString(resEntity);
                 System.out.println("doPost response content:" + resContent);
                 ServiceResponse serviceResponse = JSONUtil.toBean(resContent, ServiceResponse.class);
-                if (serviceResponse != null && serviceResponse.getMeta().getStatus().equals("0")) {
+                if (serviceResponse != null && "0".equals(serviceResponse.getMeta().getStatus())) {
                     Object items = serviceResponse.getData().getItems();
                     if (items == null) {
                         return null;
@@ -161,16 +169,33 @@ public class TestController {
     }
 
     public static void main(String[] args) {
-        Integer[] int2 = new Integer[]{4105,1935};
-        for (int i = 0; i < int2.length; i++) {
-            Map<String, Object> feishuToken = getFeishuToken(int2[i]);
-            List<FeishuAccountVo> feishuMiniProgramUser = getFeishuMiniProgramUser(int2[i], null);
-            feishuImgSend(feishuMiniProgramUser, (String) feishuToken.get("access_token"));
+//        Integer[] int2 = new Integer[]{4105,1935};
+//        for (int i = 0; i < int2.length; i++) {
+//            Map<String, Object> feishuToken = getFeishuToken(int2[i]);
+//            List<FeishuAccountVo> feishuMiniProgramUser = getFeishuMiniProgramUser(int2[i], null);
+//            feishuImgSend(feishuMiniProgramUser, (String) feishuToken.get("access_token"));
+//        }
+        int a = (int) (1 / 0.75) + 1;
+        System.out.println("a = " + a);
+//        subListDemo();
+        ProductVo productVo;
+        int i = RandomUtil.randomInt(0, 10);
+        System.out.println("i = " + i);
+        if (i % 2 == 0) {
+            productVo = new ProductVo();
+            productVo.setOneCategoryStr("王睿");
+        } else {
+            productVo = null;
         }
+        Optional<ProductVo> productVo1 = Optional.ofNullable(productVo);
+        boolean present = productVo1.isPresent();
+        System.out.println("present = " + present);
+        Optional<String> optional = productVo1.map(ProductVo::getOneCategoryStr);
+        System.out.println("optional = " + optional.orElse(null));
     }
 
     public static List<FeishuAccountVo> getFeishuMiniProgramUser(Integer companyId, String[] userIds) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(16);
         map.put("companyId", companyId);
         map.put("userIdList", userIds);
         String content = JSONUtil.toJsonStr(map);
@@ -187,7 +212,7 @@ public class TestController {
                 String resContent = EntityUtils.toString(resEntity);
                 System.out.println("doPost response content:" + resContent);
                 ServiceResponse serviceResponse = JSONUtil.toBean(resContent, ServiceResponse.class);
-                if (serviceResponse != null && serviceResponse.getMeta().getStatus().equals("000000")) {
+                if (serviceResponse != null && "000000".equals(serviceResponse.getMeta().getStatus())) {
                     Object items = serviceResponse.getData().getItems();
                     if (items == null) {
                         return null;
@@ -202,5 +227,59 @@ public class TestController {
             return null;
         }
         return null;
+    }
+
+    private static void mapCapacity() {
+        List<Integer> list = new ArrayList<>(30000);
+        for (int i = 0; i < 30000; i++) {
+            list.add(i);
+        }
+        long start = System.currentTimeMillis();
+        HashMap<Integer, Integer> map = new HashMap<>(16);
+        for (int i = 0; i < list.size(); i++) {
+            map.put(list.get(i), list.get(i));
+        }
+        long end = System.currentTimeMillis();
+
+        System.out.println("end = " + (end - start));
+    }
+
+    private static void mapCapacity2() {
+        List<Integer> list = new ArrayList<>(30000);
+        for (int i = 0; i < 30000; i++) {
+            list.add(i);
+        }
+        long start = System.currentTimeMillis();
+        Map<Integer, Integer> map = new HashMap((int) (30000 / 0.75) + 1);
+        for (int i = 0; i < list.size(); i++) {
+            map.put(list.get(i), list.get(i));
+        }
+        long end = System.currentTimeMillis();
+
+        System.out.println("end2 = " + (end - start));
+        map.forEach((key, value) -> {
+            System.out.println(key + ":" + value);
+        });
+    }
+
+    private static void subListDemo() {
+        List<String> stringList = new ArrayList() {{
+            add("H");
+            add("O");
+            add("L");
+            add("L");
+            add("E");
+            add("I");
+            add("S");
+        }};
+        List<String> list = stringList.subList(2, 5);
+
+        System.out.println("list = " + list);
+
+        list.set(0, "666");
+
+        System.out.println("list = " + list);
+
+        System.out.println("stringList = " + stringList);
     }
 }

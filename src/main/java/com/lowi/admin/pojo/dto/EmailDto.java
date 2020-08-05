@@ -21,4 +21,14 @@ public class EmailDto {
     private String title;
     private String content;
     private String text;
+
+    @Override
+    public String toString() {
+        return "EmailDto{" +
+                "emailAddress='" + emailAddress + '\'' +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", text='" + text + '\'' +
+                '}';
+    }
 }

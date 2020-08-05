@@ -21,4 +21,14 @@ public class FeishuAccountVo {
     private Integer userId;
     private String feiShuMiniProgramUserId;
     private String feiShuMiniProgramOpenId;
+
+    @Override
+    public String toString() {
+        return "FeishuAccountVo{" +
+                "companyId=" + companyId +
+                ", userId=" + userId +
+                ", feiShuMiniProgramUserId='" + feiShuMiniProgramUserId + '\'' +
+                ", feiShuMiniProgramOpenId='" + feiShuMiniProgramOpenId + '\'' +
+                '}';
+    }
 }

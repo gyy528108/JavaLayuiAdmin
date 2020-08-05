@@ -20,7 +20,7 @@ public interface UserGroup {
     interface UserOpenAccount {
     }
 
-    interface editPassword {
+    interface EditPassword {
     }
 
     interface UserLogin {

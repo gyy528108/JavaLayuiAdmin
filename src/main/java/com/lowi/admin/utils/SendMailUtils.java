@@ -58,9 +58,10 @@ public class SendMailUtils {
             try {
                 MimeMessage message = new MimeMessage(session);
                 message.setFrom(new InternetAddress(myEmail));
-                if (!to.trim().equals(""))
+                if (!"".equals(to.trim())) {
                     message.addRecipient(Message.RecipientType.TO,
                             new InternetAddress(to.trim()));
+                }
                 message.addRecipients(MimeMessage.RecipientType.CC, InternetAddress.parse(myEmail));
                 message.setSubject(subject);
                 MimeBodyPart mbp1 = new MimeBodyPart(); // 正文
@@ -71,8 +72,8 @@ public class SendMailUtils {
                 message.setContent(mp);
                 message.setSentDate(new Date());
                 message.saveChanges();
-                Transport trans = session.getTransport("smtp");
-                trans.send(message);
+                session.getTransport("smtp");
+                Transport.send(message);
                 System.out.println(message.toString());
             } catch (Exception e) {
                 e.printStackTrace();

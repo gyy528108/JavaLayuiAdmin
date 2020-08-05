@@ -62,4 +62,46 @@ public class SearchPortraitParam {
     private Integer isSort = 0;                                 //小程序是否排序 默认=0 1.排序
 
     private String miniProgramSort;                         //小程序正序倒序
+
+    @Override
+    public String toString() {
+        return "SearchPortraitParam{" +
+                "page=" + page +
+                ", pageSize=" + pageSize +
+                ", id=" + id +
+                ", companyId=" + companyId +
+                ", userId=" + userId +
+                ", taskName='" + taskName + '\'' +
+                ", isAdvanced=" + isAdvanced +
+                ", remark='" + remark + '\'' +
+                ", updateDate='" + updateDate + '\'' +
+                ", isDel=" + isDel +
+                ", taskStatus=" + taskStatus +
+                ", isTestCompany=" + isTestCompany +
+                ", userName='" + userName + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", copyFlag='" + copyFlag + '\'' +
+                ", taskType=" + taskType +
+                ", pronviceList=" + pronviceList +
+                ", cityList=" + cityList +
+                ", establishDateList=" + establishDateList +
+                ", companyTypeList=" + companyTypeList +
+                ", businessScopeList=" + businessScopeList +
+                ", userFlag=" + userFlag +
+                ", condition='" + condition + '\'' +
+                ", searchStr='" + searchStr + '\'' +
+                ", reqSource=" + reqSource +
+                ", checkSqlFlag=" + checkSqlFlag +
+                ", isPage=" + isPage +
+                ", taskId=" + taskId +
+                ", isSelectAll=" + isSelectAll +
+                ", ids='" + ids + '\'' +
+                ", invertIds='" + invertIds + '\'' +
+                ", nodes=" + nodes +
+                ", tableName='" + tableName + '\'' +
+                ", miniProgramType=" + miniProgramType +
+                ", isSort=" + isSort +
+                ", miniProgramSort='" + miniProgramSort + '\'' +
+                '}';
+    }
 }

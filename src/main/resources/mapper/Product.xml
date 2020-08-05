@@ -2,4 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lowi.admin.dao.ProductDao">
 
+    <select id="getProductList" resultType="com.lowi.admin.entity.Product">
+        SELECT p.* FROM product p,two_category tc
+        WHERE p.two_category = tc.id
+        AND p.parent_id = #{parentId}
+        <if test="oneCategoryId != null">
+            and p.one_category = #{oneCategoryId}
+        </if>
+        <if test="productInfo != null">
+            AND ( p.product_name LIKE "%"#{productInfo}"%" OR p.product_content LIKE "%"#{productInfo}"%" OR tc.category_name LIKE "%"#{productInfo}"%")
+        </if>
+        LIMIT ${page},${count}
+    </select>
+
+    <select id="getProductTotal" resultType="java.lang.Integer">
+        SELECT count(*) FROM product p,two_category tc
+        WHERE p.two_category = tc.id
+        AND p.parent_id = #{parentId}
+        <if test="oneCategoryId != null">
+            and p.one_category = #{oneCategoryId}
+        </if>
+        <if test="productInfo != null">
+            AND ( p.product_name LIKE "%"#{productInfo}"%" OR p.product_content LIKE "%"#{productInfo}"%" OR tc.category_name LIKE "%"#{productInfo}"%")
+        </if>
+    </select>
 </mapper>

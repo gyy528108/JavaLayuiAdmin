@@ -29,4 +29,20 @@ public class ProductDto {
     private String priceUnit;
     private String context;
     private String token;
+
+    @Override
+    public String toString() {
+        return "ProductDto{" +
+                "productName='" + productName + '\'' +
+                ", imgUrl='" + imgUrl + '\'' +
+                ", oneCategory=" + oneCategory +
+                ", twoCategory=" + twoCategory +
+                ", count=" + count +
+                ", unit='" + unit + '\'' +
+                ", price=" + price +
+                ", priceUnit='" + priceUnit + '\'' +
+                ", context='" + context + '\'' +
+                ", token='" + token + '\'' +
+                '}';
+    }
 }

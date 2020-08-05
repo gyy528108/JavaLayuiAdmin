@@ -20,21 +20,30 @@ import org.springframework.context.annotation.Bean;
  */
 @Data
 public class UserVo extends User {
+    private long serialVersionUID = -1L;
     private String sexStr;
 
-    public static UserVo fromVo(User user){
-        if(user==null){
+    public static UserVo fromVo(User user) {
+        if (user == null) {
             return null;
         }
-        UserVo userVo=new UserVo();
-        BeanUtils.copyProperties(user,userVo);
-        if(user.getSex()!=null){
-            if(user.getSex()==0){
+        UserVo userVo = new UserVo();
+        BeanUtils.copyProperties(user, userVo);
+        if (user.getSex() != null) {
+            if (user.getSex() == 0) {
                 userVo.setSexStr("女");
-            }else {
+            } else {
                 userVo.setSexStr("男");
             }
         }
         return userVo;
+    }
+
+    @Override
+    public String toString() {
+        super.toString();
+        return "UserVo{" +
+                "sexStr='" + sexStr + '\'' +
+                '}';
     }
 }

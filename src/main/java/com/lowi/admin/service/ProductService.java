@@ -44,7 +44,7 @@ public class ProductService {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    public Result getProductList(String token, Integer page, Integer limit) {
+    public Result getProductList(String token, Integer page, Integer limit, Integer oneCategoryId, String productInfo) {
         String userInfo = stringRedisTemplate.opsForValue().get(token);
         User user = JSONUtil.toBean(userInfo, User.class);
         Integer parentId;
@@ -53,11 +53,22 @@ public class ProductService {
         } else {
             parentId = user.getParentId();
         }
-        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("parent_id", parentId);
-        Page<Product> productPage = new Page<>(page, limit);
-        IPage<Product> productIPage = productDao.selectPage(productPage, queryWrapper);
-        List<Product> records = productIPage.getRecords();
+        List<Product> records;
+        int total;
+        if (productInfo != null && !"".equals(productInfo)) {
+            records = productDao.getProductList((page - 1) * limit, limit, parentId, oneCategoryId, productInfo);
+            total = productDao.getProductTotal(parentId, oneCategoryId, productInfo);
+        } else {
+            QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("parent_id", parentId);
+            if (oneCategoryId != null) {
+                queryWrapper.eq("one_category", oneCategoryId);
+            }
+            Page<Product> productPage = new Page<>(page, limit);
+            IPage<Product> productIPage = productDao.selectPage(productPage, queryWrapper);
+            records = productIPage.getRecords();
+            total = (int) productIPage.getTotal();
+        }
         List<ProductVo> productVos = new ArrayList<>();
         for (Product product : records) {
             ProductVo productVo = new ProductVo();
@@ -72,7 +83,7 @@ public class ProductService {
         responseResult.setCode(0);
         responseResult.setMsg("获取成功");
         responseResult.setData(productVos);
-        responseResult.setCount((int) productIPage.getTotal());
+        responseResult.setCount(total);
         return responseResult;
     }
 
@@ -85,7 +96,7 @@ public class ProductService {
         } else {
             parentId = user.getParentId();
         }
-        Product product=new Product();
+        Product product = new Product();
         product.setCreateId(user.getId());
         product.setCreateName(user.getUsername());
         product.setCreateTime(new Date());

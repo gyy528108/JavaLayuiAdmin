@@ -52,7 +52,7 @@ public class ControllerInterceptor {
             HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
             String requestURI = request.getRequestURI();
             System.out.println("requestURI = " + requestURI);
-            boolean contains = list.contains(requestURI);
+            boolean contains = LIST.contains(requestURI);
             if (contains) {
                 return result;
             }
@@ -94,6 +94,7 @@ public class ControllerInterceptor {
                 result.setMsg("请登录");
                 return result;
             }
+            logger.info("请求方法-->{},请求参数-->{}", requestURI, JSONUtil.toJsonStr(argList));
             logger.info("请求方法-->{},请求返回参数-->{}", requestURI, JSONUtil.toJsonStr(result));
         } catch (Exception e) {
             logger.error("参数获取失败: {}", e.getMessage());
@@ -101,6 +102,6 @@ public class ControllerInterceptor {
         return result;
     }
 
-    private final static List<String> list = Arrays.asList("/user/login", "/user/logout","/product/upload","/es/test","/test/test1");
+    private final static List<String> LIST = Arrays.asList("/user/login", "/user/logout","/product/upload","/es/test","/test/test1");
 
 }

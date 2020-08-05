@@ -44,7 +44,7 @@ public class EsConfig {
      *
      * @return
      */
-    @Bean(autowire = Autowire.BY_NAME, name = "restHighLevelClient")
+    @Bean(name = "restHighLevelClient")
     public RestHighLevelClient client() {
         builder = RestClient.builder(new HttpHost(elasticsearchServerUrl, elasticsearchServerPort));
         if (uniqueConnectTimeConfig) {

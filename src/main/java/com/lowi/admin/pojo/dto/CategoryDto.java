@@ -21,4 +21,12 @@ public class CategoryDto {
     private String token;
 
     private Integer parentId;
+
+    @Override
+    public String toString() {
+        return "CategoryDto{" +
+                "token='" + token + '\'' +
+                ", parentId=" + parentId +
+                '}';
+    }
 }
