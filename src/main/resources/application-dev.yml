@@ -6,11 +6,14 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
     redis:
       port: 6379
-      password: lyx123456
-      host: 10.10.10.181
-#    elasticsearch:
-#      rest:
-#        uris: 10.10.10.162:9200
+      password: 123456
+      host: 192.168.150.128
+      jedis:
+        pool:
+          max-active: 8
+          max-idle: 4
+          min-idle: 1
+          max-wait: 500
 management:
   endpoint:
     health:
@@ -26,5 +29,7 @@ mybatis-plus:
 
 localhostUrl: http://localhost:8122
 
-#elasticsearchServerUrl: 10.10.10.162
-#elasticsearchServerPort: 9200
+elasticsearchServerUrl: 10.10.10.162
+elasticsearchServerPort: 9200
+
+uploadUrl: F:\file\img\

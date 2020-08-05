@@ -8,6 +8,7 @@ import com.lowi.admin.dao.OneCategoryDao;
 import com.lowi.admin.dao.ProductDao;
 import com.lowi.admin.dao.TwoCategoryDao;
 import com.lowi.admin.entity.*;
+import com.lowi.admin.pojo.dto.ProductDto;
 import com.lowi.admin.pojo.vo.ProductVo;
 import com.lowi.admin.utils.Result;
 import org.springframework.beans.BeanUtils;
@@ -16,6 +17,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -60,6 +62,8 @@ public class ProductService {
         for (Product product : records) {
             ProductVo productVo = new ProductVo();
             BeanUtils.copyProperties(product, productVo);
+            OneCategory oneCategory = oneCategoryDao.selectById(product.getOneCategory());
+            productVo.setOneCategoryStr(oneCategory.getCategoryName());
             TwoCategory twoCategory = twoCategoryDao.selectById(product.getTwoCategory());
             productVo.setTwoCategoryStr(twoCategory.getCategoryName());
             productVos.add(productVo);
@@ -70,5 +74,46 @@ public class ProductService {
         responseResult.setData(productVos);
         responseResult.setCount((int) productIPage.getTotal());
         return responseResult;
+    }
+
+    public Result add(ProductDto productDto) {
+        String userInfo = stringRedisTemplate.opsForValue().get(productDto.getToken());
+        User user = JSONUtil.toBean(userInfo, User.class);
+        Integer parentId;
+        if (user.getParentId() == 0) {
+            parentId = user.getId();
+        } else {
+            parentId = user.getParentId();
+        }
+        Product product=new Product();
+        product.setCreateId(user.getId());
+        product.setCreateName(user.getUsername());
+        product.setCreateTime(new Date());
+        product.setImg(productDto.getImgUrl());
+        product.setOneCategory(productDto.getOneCategory());
+        product.setTwoCategory(productDto.getTwoCategory());
+        product.setParentId(parentId);
+        product.setPrice(productDto.getPrice());
+        product.setPriceUnit(productDto.getPriceUnit());
+        product.setTotal(productDto.getCount());
+        product.setUnit(productDto.getUnit());
+        product.setProductName(productDto.getProductName());
+        product.setProductContent(productDto.getContext());
+        int insert = 0;
+        try {
+            insert = productDao.insert(product);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Result responseResult = new Result();
+        if (insert == 0) {
+            responseResult.setCode(1);
+            responseResult.setMsg("系统异常，请重试");
+            return responseResult;
+        }
+        responseResult.setCode(0);
+        responseResult.setMsg("添加成功");
+        return responseResult;
+
     }
 }

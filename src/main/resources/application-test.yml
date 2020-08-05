@@ -26,5 +26,7 @@ mybatis-plus:
 
 localhostUrl: http://localhost:8122
 
+uploadUrl:  /usr/local/web/img/
+
 #elasticsearchServerUrl: 10.10.10.162
 #elasticsearchServerPort: 9200

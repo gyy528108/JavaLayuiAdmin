@@ -101,6 +101,6 @@ public class ControllerInterceptor {
         return result;
     }
 
-    private final static List<String> list = Arrays.asList("/user/login", "/user/logout","/product/upload");
+    private final static List<String> list = Arrays.asList("/user/login", "/user/logout","/product/upload","/es/test","/test/test1");
 
 }

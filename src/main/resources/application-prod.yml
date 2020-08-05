@@ -19,3 +19,5 @@ mybatis-plus:
 
 
 localhostUrl: http://www.lowi.run:8122
+
+uploadUrl:  /usr/local/web/img/

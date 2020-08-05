@@ -2,6 +2,8 @@ package com.lowi.admin.pojo.dto;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * ProductDto.java
  * ==============================================
@@ -17,4 +19,14 @@ import lombok.Data;
  */
 @Data
 public class ProductDto {
+    private String productName;
+    private String imgUrl;
+    private Integer oneCategory;
+    private Integer twoCategory;
+    private Integer count;
+    private String unit;
+    private BigDecimal price;
+    private String priceUnit;
+    private String context;
+    private String token;
 }

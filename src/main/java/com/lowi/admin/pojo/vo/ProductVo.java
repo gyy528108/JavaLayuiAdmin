@@ -22,10 +22,8 @@ import org.springframework.context.annotation.Bean;
  */
 @Data
 public class ProductVo extends Product {
-    @Autowired
-    private TwoCategoryDao twoCategoryDao;
-
     private String twoCategoryStr;
+    private String oneCategoryStr;
 
     public static ProductVo toVo(Product product) {
         if (product == null) {

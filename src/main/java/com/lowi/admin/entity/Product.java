@@ -34,6 +34,8 @@ public class Product implements Serializable {
 
     private String productName;
 
+    private String img;
+
     private Integer oneCategory;
 
     private Integer twoCategory;
