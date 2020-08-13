@@ -1,6 +1,6 @@
 package com.lowi.admin.dao;
 
-import com.lowi.admin.entity.Order;
+import com.lowi.admin.entity.OrderRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
  * @since 2020-08-12
  */
 @Repository
-public interface OrderDao extends BaseMapper<Order> {
+public interface OrderDao extends BaseMapper<OrderRecord> {
 
     int payOrder(Integer id, Integer version);
 

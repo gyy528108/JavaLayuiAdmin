@@ -20,5 +20,5 @@ public class OrderDTO {
     private Integer id;
     private Integer productId;
     private String token;
-    private String orderId;
+    private Integer orderId;
 }

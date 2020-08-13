@@ -20,4 +20,6 @@ public interface ProductDao extends BaseMapper<Product> {
     List<Product> getProductList(Integer page, Integer count, Integer parentId, Integer oneCategoryId, String productInfo);
 
     int getProductTotal(Integer parentId, Integer oneCategoryId, String productInfo);
+
+    void updateCount(Integer productId);
 }

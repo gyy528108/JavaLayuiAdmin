@@ -22,7 +22,7 @@ public enum MqTopicEnum {
     //支付
     PAY("pay"),
     //取消
-    DALEY("daley"),
+    DELAY("delay"),
     ;
 
     MqTopicEnum(String topic) {

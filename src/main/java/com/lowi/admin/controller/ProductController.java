@@ -55,7 +55,7 @@ public class ProductController {
 
         System.out.println("multipartFile = " + multipartFile);
         String s = productionFile(multipartFile);
-        Map<String, Object> map = new HashMap<>(16);
+        Map<String, Object> map = new HashMap<>(2);
         map.put("img", s);
         Result responseResult = new Result();
         responseResult.setCode(0);
@@ -119,7 +119,7 @@ public class ProductController {
         for (int i = 0; i < ary.length; i++) {
             System.out.println("ary = " + ary[i]);
         }
-// 预期大于 3，结果是 3
+        // 预期大于 3，结果是 3
         System.out.println(ary.length);
 
     }

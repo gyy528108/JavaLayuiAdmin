@@ -26,4 +26,7 @@
             AND ( p.product_name LIKE "%"#{productInfo}"%" OR p.product_content LIKE "%"#{productInfo}"%" OR tc.category_name LIKE "%"#{productInfo}"%")
         </if>
     </select>
+    <update id="updateCount">
+        update product set total = total - 1 where id = #{id} and total > 0
+    </update>
 </mapper>

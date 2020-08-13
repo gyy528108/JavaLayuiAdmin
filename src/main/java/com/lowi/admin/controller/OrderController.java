@@ -29,7 +29,12 @@ public class OrderController {
 
     @RequestMapping("/submitOrder")
     public Result submitOrder(@RequestBody OrderDTO orderDTO){
-        return orderService.submitOrder(orderDTO);
+        try {
+            return orderService.submitOrder(orderDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.getInstance(1,"系统异常");
+        }
     }
 
     @RequestMapping("/payOrder")

@@ -6,8 +6,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
     port: 6379
-    password: lyx123456
-    host: 10.10.10.181
+    password: 123456
+    host: 192.168.229.128
     jedis:
       pool:
         max-active: 8
@@ -28,7 +28,7 @@ mybatis-plus:
 
 mq:
   producerGroup: lowiProducer
-  serverAddr: 47.114.180.75:9876
+  serverAddr: 192.168.229.128:9876
 
 localhostUrl: http://localhost:8122
 
