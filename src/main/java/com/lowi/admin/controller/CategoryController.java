@@ -31,10 +31,26 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    /**
+     * 获取一级类别列表
+     * @Request
+     * @Auther lowi
+     * @Date 2020-08-06 10:57
+     * @Return <List<OneCategory>> 一级类别
+     */
     @RequestMapping("/getOneCategory")
     public Result<List<OneCategory>> getOneCategory(@RequestBody CategoryDto categoryDto) {
         return categoryService.getOneCategory(categoryDto);
     }
+
+    /**
+     *
+     * 获取二级类别列表
+     * @Request
+     * @Auther lowi
+     * @Date 2020-08-06 10:57
+     * @Return <List<OneCategory>> 一级类别
+     */
     @RequestMapping("/getTwoCategory")
     public Result<List<TwoCategory>> getTwoCategory(@RequestBody CategoryDto categoryDto) {
         return categoryService.getTwoCategory(categoryDto);

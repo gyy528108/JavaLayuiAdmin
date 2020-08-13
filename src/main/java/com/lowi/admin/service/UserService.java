@@ -15,10 +15,7 @@ import com.lowi.admin.entity.LoginLog;
 import com.lowi.admin.entity.User;
 import com.lowi.admin.pojo.dto.UserDto;
 import com.lowi.admin.pojo.vo.UserVo;
-import com.lowi.admin.utils.Md5Utils;
-import com.lowi.admin.utils.Result;
-import com.lowi.admin.utils.SendMailUtils;
-import com.lowi.admin.utils.TokenUtils;
+import com.lowi.admin.utils.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -233,31 +230,42 @@ public class UserService {
             responseResult.setMsg("无权限");
             return responseResult;
         }
-        User user = new User();
-        user.setMobile(userDto.getMobile());
-        User userPhone = userDao.selectOne(new QueryWrapper<>(user));
-        if (userPhone != null) {
+        String value = String.valueOf(System.currentTimeMillis() + 10 * 1000);
+        boolean lock = LockUtil.lock(userDto.getMobile(),value);
+        if(!lock){
             responseResult.setCode(1);
-            responseResult.setMsg("手机号已存在");
+            responseResult.setMsg("请重试");
             return responseResult;
         }
-        int insert = 0;
         try {
-            user.setParentId(userVo.getId());
-            user.setEmail(userDto.getEmail());
-            user.setCreateTime(new Date());
-            user.setIsDel(false);
-            user.setUsername(userDto.getUserName());
-            String md5Hex = Md5Utils.md5Hex(userDto.getPassword());
-            user.setPassword(md5Hex);
-            insert = userDao.insert(user);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (insert == 0) {
-            responseResult.setCode(1);
-            responseResult.setMsg("系统异常，请重试");
-            return responseResult;
+            User user = new User();
+            user.setMobile(userDto.getMobile());
+            User userPhone = userDao.selectOne(new QueryWrapper<>(user));
+            if (userPhone != null) {
+                responseResult.setCode(1);
+                responseResult.setMsg("手机号已存在");
+                return responseResult;
+            }
+            int insert = 0;
+            try {
+                user.setParentId(userVo.getId());
+                user.setEmail(userDto.getEmail());
+                user.setCreateTime(new Date());
+                user.setIsDel(false);
+                user.setUsername(userDto.getUserName());
+                String md5Hex = Md5Utils.md5Hex(userDto.getPassword());
+                user.setPassword(md5Hex);
+                insert = userDao.insert(user);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (insert == 0) {
+                responseResult.setCode(1);
+                responseResult.setMsg("系统异常，请重试");
+                return responseResult;
+            }
+        } finally {
+            LockUtil.unlock(userDto.getMobile(),value);
         }
         responseResult.setCode(0);
         responseResult.setMsg("开户成功");
@@ -318,6 +326,7 @@ public class UserService {
         Map<String, Object> map = new HashMap<>();
 
         map.put("name", userVo.getUsername());
+        map.put("headImg", Objects.toString(userVo.getHeadImg(), "cssjs/images/logo.png"));
         if (userVo.getParentId() == 0) {
             map.put("admin", true);
             responseResult.setCode(0);

@@ -8,7 +8,7 @@ plaintext: lowi
 
 logging:
   file:
-    path: ./logs/admin
+    path: ./logs/javaLowiAdmin
   config: classpath:logback-spring.xml
 mybatis-plus:
   global-config:

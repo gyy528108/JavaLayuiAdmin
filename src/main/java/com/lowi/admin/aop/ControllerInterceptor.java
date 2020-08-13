@@ -50,9 +50,8 @@ public class ControllerInterceptor {
         try {
             RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
             HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-            String requestURI = request.getRequestURI();
-            System.out.println("requestURI = " + requestURI);
-            boolean contains = LIST.contains(requestURI);
+            String requestUri = request.getRequestURI();
+            boolean contains = LIST.contains(requestUri);
             if (contains) {
                 return result;
             }
@@ -82,26 +81,26 @@ public class ControllerInterceptor {
                 token = valueOf;
             }
             if (token == null) {
-                logger.info("请求方法-->{},token为空,请登录", requestURI);
+                logger.info("请求方法-->{},token为空,请登录", requestUri);
                 result.setCode(1);
                 result.setMsg("请登录");
                 return result;
             }
             boolean loginValida = LoginValidaUtils.loginValida(token);
             if (!loginValida) {
-                logger.info("请求方法-->{},token验证失败,请登录", requestURI);
+                logger.info("请求方法-->{},token验证失败,请登录", requestUri);
                 result.setCode(1);
                 result.setMsg("请登录");
                 return result;
             }
-            logger.info("请求方法-->{},请求参数-->{}", requestURI, JSONUtil.toJsonStr(argList));
-            logger.info("请求方法-->{},请求返回参数-->{}", requestURI, JSONUtil.toJsonStr(result));
+            logger.info("请求方法-->{},请求参数-->{}", requestUri, JSONUtil.toJsonStr(argList));
+            logger.info("请求方法-->{},请求返回参数-->{}", requestUri, JSONUtil.toJsonStr(result));
         } catch (Exception e) {
             logger.error("参数获取失败: {}", e.getMessage());
         }
         return result;
     }
 
-    private final static List<String> LIST = Arrays.asList("/user/login", "/user/logout","/product/upload","/es/test","/test/test1");
+    private final static List<String> LIST = Arrays.asList("/user/login", "/user/logout","/product/upload","/es/test","/test/test","mq/pay","mq/send");
 
 }

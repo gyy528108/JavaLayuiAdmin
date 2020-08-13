@@ -26,4 +26,11 @@ public class Result<T> {
         responseResult.setMsg(msg);
         return responseResult;
     }
+
+    public static Result getInstance(Integer code, String msg) {
+        Result responseResult = new Result();
+        responseResult.setCode(code);
+        responseResult.setMsg(msg);
+        return responseResult;
+    }
 }

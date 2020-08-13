@@ -59,8 +59,8 @@ public class SnowFlake {
         //获取机器编码
         this.workerId = this.getMachineNum();
         //获取进程编码
-        RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
-        this.processId = Long.valueOf(runtimeMXBean.getName().split("@")[0]).longValue();
+        RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+        this.processId = Long.valueOf(runtimeMxBean.getName().split("@")[0]).longValue();
 
         //避免编码超出最大值
         this.workerId = workerId & workerMask;
@@ -133,24 +133,5 @@ public class SnowFlake {
         }
         machinePiece = sb.toString().hashCode();
         return machinePiece;
-    }
-
-    public static void main(String[] args) {
-        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(4);
-        ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(4);
-        ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
-        ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
-
-        for (int i = 0; i < 10; i++) {
-            singleThreadExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    long l = nextId();
-                    System.out.println("l = " + l);
-                    System.out.println("l = " + this.hashCode());
-                }
-            });
-        }
-
     }
 }

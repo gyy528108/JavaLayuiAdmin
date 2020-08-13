@@ -38,8 +38,11 @@ import java.util.Objects;
 public class ProductController {
     @Value("${uploadUrl}")
     private String uploadUrl;
+    @Value("${fileUrl}")
+    private String fileUrl;
     @Autowired
     private ProductService productService;
+    private static String DEV = "dev";
 
     @RequestMapping("/getProductList")
     public Result getProductList(String token, Integer page, Integer limit, Integer oneCategory, String productInfo) {
@@ -73,19 +76,12 @@ public class ProductController {
         String timePath = LocalDate.now().toString();
         timePath = timePath.replaceAll("-", "");
         String baseUrl = timePath + "/" + DateUtil.currentSeconds() + endStr;
-        String activeProfile = ProfileConfig.getActiveProfile();
-        String fileLocal;
-        if ("dev".equals(activeProfile)) {
-            fileLocal = "http://10.10.10.22/img/";
-        } else {
-            fileLocal = uploadUrl;
-        }
         try {
             downloadFile(multipartFile, uploadUrl + baseUrl);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return fileLocal + baseUrl;
+        return fileUrl + baseUrl;
     }
 
     public void downloadFile(MultipartFile multipartFile, String fileLocal) throws Exception {
@@ -119,7 +115,7 @@ public class ProductController {
 
 
         String str = "a,b,c,,";
-        String[] ary = str.split(",",-1);
+        String[] ary = str.split(",", -1);
         for (int i = 0; i < ary.length; i++) {
             System.out.println("ary = " + ary[i]);
         }

@@ -1,19 +1,19 @@
 spring:
-    datasource:
-      url: jdbc:mysql://localhost:3306/lowi?serverTimezone=GMT%2B8&amp&characterEncoding=utf-8
-      username: root
-      password: 123456
-      driver-class-name: com.mysql.cj.jdbc.Driver
-    redis:
-      port: 6379
-      password: 123456
-      host: 192.168.150.128
-      jedis:
-        pool:
-          max-active: 8
-          max-idle: 4
-          min-idle: 1
-          max-wait: 500
+  datasource:
+    url: jdbc:mysql://localhost:3306/lowi?serverTimezone=GMT%2B8&amp&characterEncoding=utf-8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    port: 6379
+    password: lyx123456
+    host: 10.10.10.181
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 4
+        min-idle: 1
+        max-wait: 500
 management:
   endpoint:
     health:
@@ -26,6 +26,9 @@ mybatis-plus:
       capital-mode: true
       column-like: true
 
+mq:
+  producerGroup: lowiProducer
+  serverAddr: 47.114.180.75:9876
 
 localhostUrl: http://localhost:8122
 
@@ -33,3 +36,4 @@ elasticsearchServerUrl: 10.10.10.162
 elasticsearchServerPort: 9200
 
 uploadUrl: F:\file\img\
+fileUrl: http://10.10.10.22/img/

@@ -22,11 +22,14 @@ mybatis-plus:
     db-config:
       capital-mode: true
       column-like: true
-
+mq:
+  producerGroup: lowiProducer
+  serverAddr: 47.114.180.75:9876
 
 localhostUrl: http://localhost:8122
 
 uploadUrl:  /usr/local/web/img/
+fileUrl: http://47.114.180.75/img/
 
-#elasticsearchServerUrl: 10.10.10.162
-#elasticsearchServerPort: 9200
+elasticsearchServerUrl: 10.10.10.162
+elasticsearchServerPort: 9200

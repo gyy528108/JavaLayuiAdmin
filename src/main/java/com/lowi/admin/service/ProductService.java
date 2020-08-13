@@ -44,6 +44,8 @@ public class ProductService {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    private static String PRODUCT_KEY = "product_";
+
     public Result getProductList(String token, Integer page, Integer limit, Integer oneCategoryId, String productInfo) {
         String userInfo = stringRedisTemplate.opsForValue().get(token);
         User user = JSONUtil.toBean(userInfo, User.class);
@@ -56,18 +58,23 @@ public class ProductService {
         List<Product> records;
         int total;
         if (productInfo != null && !"".equals(productInfo)) {
-            records = productDao.getProductList((page - 1) * limit, limit, parentId, oneCategoryId, productInfo);
             total = productDao.getProductTotal(parentId, oneCategoryId, productInfo);
+            if (total > 0) {
+                records = productDao.getProductList((page - 1) * limit, limit, parentId, oneCategoryId, productInfo);
+            } else {
+                records = new ArrayList<>();
+                total = 0;
+            }
         } else {
             QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("parent_id", parentId);
             if (oneCategoryId != null) {
                 queryWrapper.eq("one_category", oneCategoryId);
             }
-            Page<Product> productPage = new Page<>(page, limit);
-            IPage<Product> productIPage = productDao.selectPage(productPage, queryWrapper);
-            records = productIPage.getRecords();
-            total = (int) productIPage.getTotal();
+            Page<Product> pageParam = new Page<>(page, limit);
+            IPage<Product> productPage = productDao.selectPage(pageParam, queryWrapper);
+            records = productPage.getRecords();
+            total = (int) productPage.getTotal();
         }
         List<ProductVo> productVos = new ArrayList<>();
         for (Product product : records) {
@@ -122,6 +129,7 @@ public class ProductService {
             responseResult.setMsg("系统异常，请重试");
             return responseResult;
         }
+        stringRedisTemplate.opsForValue().increment(PRODUCT_KEY + product.getId(), productDto.getCount());
         responseResult.setCode(0);
         responseResult.setMsg("添加成功");
         return responseResult;

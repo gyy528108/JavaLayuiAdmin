@@ -3,10 +3,17 @@ package com.lowi.admin.controller;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.lowi.admin.entity.User;
 import com.lowi.admin.pojo.dto.ServiceResponse;
+import com.lowi.admin.pojo.dto.UserDto;
 import com.lowi.admin.pojo.vo.FeishuAccountVo;
 import com.lowi.admin.pojo.vo.ProductVo;
+import com.lowi.admin.pojo.vo.TreadDemo;
+import com.lowi.admin.service.TestService;
+import com.lowi.admin.utils.LockUtil;
 import com.lowi.admin.utils.Result;
+import com.sun.corba.se.impl.orbutil.concurrent.Sync;
+import com.sun.corba.se.impl.orbutil.concurrent.SyncUtil;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -39,6 +46,10 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicStampedReference;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.IntStream;
 
 /**
@@ -61,16 +72,21 @@ public class TestController {
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    TestService testService;
+
+
     private Logger logger = LoggerFactory.getLogger(TestController.class);
 
     @RequestMapping("/test")
-    public Result<Map<String, Object>> test() {
-        try {
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public Result test() {
+        long l = System.currentTimeMillis() + 10 * 1000;
+        for (int i = 0; i < 5; i++) {
+            testService.lock("13462184511", String.valueOf(l), i);
         }
-        return null;
+        Result result = new Result();
+        result.setCode(0);
+        return result;
     }
 
     @RequestMapping("/test1")
@@ -78,15 +94,10 @@ public class TestController {
         Map<String, Object> feishuToken = getFeishuToken(4105);
         ContentType strContent = ContentType.create("text/plain", Charset.forName("UTF-8"));
         CloseableHttpClient httpclient = HttpClients.createDefault();
-
-
         HttpPost httpPost = new HttpPost("https://open.feishu.cn/open-apis/image/v4/put/");
-//        httpPost.setHeader("Content-Type", "application/json");
         httpPost.setHeader("Authorization", "Bearer " + (String) feishuToken.get("access_token"));
-
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-
         builder.addBinaryBody("image", multipartFile.getInputStream(), ContentType.DEFAULT_BINARY, multipartFile.getOriginalFilename());
         builder.addTextBody("image_type", "message", strContent);
         //Step4：转化为消息体
@@ -168,32 +179,6 @@ public class TestController {
         }
     }
 
-    public static void main(String[] args) {
-//        Integer[] int2 = new Integer[]{4105,1935};
-//        for (int i = 0; i < int2.length; i++) {
-//            Map<String, Object> feishuToken = getFeishuToken(int2[i]);
-//            List<FeishuAccountVo> feishuMiniProgramUser = getFeishuMiniProgramUser(int2[i], null);
-//            feishuImgSend(feishuMiniProgramUser, (String) feishuToken.get("access_token"));
-//        }
-        int a = (int) (1 / 0.75) + 1;
-        System.out.println("a = " + a);
-//        subListDemo();
-        ProductVo productVo;
-        int i = RandomUtil.randomInt(0, 10);
-        System.out.println("i = " + i);
-        if (i % 2 == 0) {
-            productVo = new ProductVo();
-            productVo.setOneCategoryStr("王睿");
-        } else {
-            productVo = null;
-        }
-        Optional<ProductVo> productVo1 = Optional.ofNullable(productVo);
-        boolean present = productVo1.isPresent();
-        System.out.println("present = " + present);
-        Optional<String> optional = productVo1.map(ProductVo::getOneCategoryStr);
-        System.out.println("optional = " + optional.orElse(null));
-    }
-
     public static List<FeishuAccountVo> getFeishuMiniProgramUser(Integer companyId, String[] userIds) {
         Map<String, Object> map = new HashMap<>(16);
         map.put("companyId", companyId);
@@ -229,38 +214,6 @@ public class TestController {
         return null;
     }
 
-    private static void mapCapacity() {
-        List<Integer> list = new ArrayList<>(30000);
-        for (int i = 0; i < 30000; i++) {
-            list.add(i);
-        }
-        long start = System.currentTimeMillis();
-        HashMap<Integer, Integer> map = new HashMap<>(16);
-        for (int i = 0; i < list.size(); i++) {
-            map.put(list.get(i), list.get(i));
-        }
-        long end = System.currentTimeMillis();
-
-        System.out.println("end = " + (end - start));
-    }
-
-    private static void mapCapacity2() {
-        List<Integer> list = new ArrayList<>(30000);
-        for (int i = 0; i < 30000; i++) {
-            list.add(i);
-        }
-        long start = System.currentTimeMillis();
-        Map<Integer, Integer> map = new HashMap((int) (30000 / 0.75) + 1);
-        for (int i = 0; i < list.size(); i++) {
-            map.put(list.get(i), list.get(i));
-        }
-        long end = System.currentTimeMillis();
-
-        System.out.println("end2 = " + (end - start));
-        map.forEach((key, value) -> {
-            System.out.println(key + ":" + value);
-        });
-    }
 
     private static void subListDemo() {
         List<String> stringList = new ArrayList() {{
@@ -281,5 +234,42 @@ public class TestController {
         System.out.println("list = " + list);
 
         System.out.println("stringList = " + stringList);
+    }
+
+    class LRUCache<K, V> extends LinkedHashMap<K, V> {
+        private final int CACHE_SIZE;
+
+        LRUCache(int cacheSize) {
+            super((int) Math.ceil(cacheSize / 0.75) + 1, .75f, true);
+            CACHE_SIZE = cacheSize;
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+            return size() > CACHE_SIZE;
+        }
+    }
+
+    private volatile static long COUNT = 1L;
+    private static AtomicInteger atomicInteger = new AtomicInteger(10);//CAS操作即比较并替换，实现并发算法时常用到的一种技术 不能避免ABA问题
+    static AtomicStampedReference<Integer> stampedReference = new AtomicStampedReference<Integer>(10, 1);
+
+    public static void main(String[] args) {
+        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
+        for (int i = 0; i < 100; i++) {
+            int randomInt = RandomUtil.randomInt(1, 10);
+            fixedThreadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (atomicInteger.get() - randomInt < 0) {
+                        System.out.println("数量不够");
+                    } else {
+                        atomicInteger.set(atomicInteger.get() - randomInt);
+                        System.out.println("randomInt = " + randomInt);
+                        System.out.println("get = " + atomicInteger.get());
+                    }
+                }
+            });
+        }
     }
 }
