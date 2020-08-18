@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -20,4 +21,8 @@ public interface IpDataDao extends BaseMapper<IpData> {
     void batchInert(List<IpData> ipDataList);
 
     List<IpData> getIpAddr(Long ip);
+
+    List<Map> getTables();
+
+    List<Map> getTableData(String tableName);
 }

@@ -1,5 +1,9 @@
 package com.lowi.admin.pojo.vo;
 
+import lombok.Data;
+
+import java.util.List;
+
 /**
  * PageInitVO.java
  * ==============================================
@@ -10,8 +14,12 @@ package com.lowi.admin.pojo.vo;
  *
  * @author : gengyy
  * @version : v2.0
- * @desc :
+ * @desc :   页面初始化类
  * @since : 2020/8/17 10:06
  */
+@Data
 public class PageInitVO {
+    private Object homeInfo;
+    private Object logoInfo;
+    private List<Object> menuInfo;
 }

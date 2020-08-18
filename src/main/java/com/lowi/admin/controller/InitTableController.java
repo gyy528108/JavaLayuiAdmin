@@ -10,9 +10,15 @@ import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+import com.lowi.admin.dao.IpDataDao;
+import com.lowi.admin.utils.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -28,7 +34,24 @@ import java.util.Scanner;
  * @desc :
  * @since : 2019/12/18 15:41
  */
+@RestController
+@RequestMapping("table")
 public class InitTableController {
+    @Autowired
+    IpDataDao dataTableDao;
+    @RequestMapping("/createTable")
+    public Result createTable(){
+        List<Map> tableList = dataTableDao.getTables();
+        System.out.println("tableList = " + tableList);
+        return Result.getInstance(0,"");
+    }
+
+    @RequestMapping("/getTableData")
+    public Result getTableData(String tableName){
+        List<Map> tableList = dataTableDao.getTableData(tableName);
+        System.out.println("tableList = " + tableList);
+        return Result.getInstance(0,"");
+    }
 
     /**
      * <p>

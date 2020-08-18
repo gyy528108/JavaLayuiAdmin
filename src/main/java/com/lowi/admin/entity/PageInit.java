@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -19,6 +21,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
+@TableName("page_init")
 public class PageInit implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -27,7 +30,12 @@ public class PageInit implements Serializable {
     private Integer id;
 
     /**
-     * admin账户是否能看 1 能 0 不能
+     * 超级管理员才能查看
+     */
+    private Boolean isSuperAdmin;
+
+    /**
+     * 是否只有admin账户查看 0 否 1 是
      */
     private Boolean isAdmin;
 

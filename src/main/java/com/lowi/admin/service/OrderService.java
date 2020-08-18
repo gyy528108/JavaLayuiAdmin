@@ -3,8 +3,11 @@ package com.lowi.admin.service;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lowi.admin.dao.OrderDao;
 import com.lowi.admin.dao.ProductDao;
+import com.lowi.admin.entity.LoginLog;
 import com.lowi.admin.entity.OrderRecord;
 import com.lowi.admin.entity.Product;
 import com.lowi.admin.entity.User;
@@ -12,6 +15,7 @@ import com.lowi.admin.enums.MqTopicEnum;
 import com.lowi.admin.enums.OrderStatusEnum;
 import com.lowi.admin.mq.MqService;
 import com.lowi.admin.pojo.dto.OrderDTO;
+import com.lowi.admin.pojo.vo.OrderVO;
 import com.lowi.admin.utils.LockUtil;
 import com.lowi.admin.utils.Result;
 import org.slf4j.Logger;
@@ -22,8 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * OrderService.java
@@ -55,7 +58,6 @@ public class OrderService {
 
     @Transactional
     public Result submitOrder(OrderDTO orderDTO) {
-        Result result = new Result();
         String productCount = stringRedisTemplate.opsForValue().get(PRODUCT_KEY + orderDTO.getProductId());
         if (productCount == null) {
             String lockValue = String.valueOf((System.currentTimeMillis() + 10 * 1000));
@@ -141,5 +143,30 @@ public class OrderService {
         result.setCode(1);
         result.setMsg("服务异常，请稍后再试");
         return result;
+    }
+
+    public Result getOrderList(String token, Integer page, Integer limit) {
+        String userInfo = stringRedisTemplate.opsForValue().get(token);
+        User user = JSONUtil.toBean(userInfo, User.class);
+        QueryWrapper<OrderRecord> queryWrapper = new QueryWrapper<>();
+        Page<OrderRecord> pageInfo = new Page<>(page, limit);
+        queryWrapper.select().eq("user_id", user.getId()).orderByDesc("create_time");
+        IPage<OrderRecord> selectPage = orderDao.selectPage(pageInfo, queryWrapper);
+        List<OrderRecord> records = selectPage.getRecords();
+        List<OrderVO> orderVOS = new ArrayList<>();
+        for (OrderRecord orderRecord : records) {
+            Product product = productDao.selectById(orderRecord.getProductId());
+            OrderVO orderVO = new OrderVO();
+            orderVO.setOrderNo(orderRecord.getOrderNo());
+            orderVO.setCreateTime(orderRecord.getCreateTime());
+            orderVO.setPrice(product.getPrice());
+            orderVO.setPriceUnit(product.getPriceUnit());
+            orderVO.setProductId(product.getId());
+            orderVO.setProductName(product.getProductName());
+            orderVO.setStatus(orderRecord.getStatus());
+            orderVO.setStatusStr(Objects.toString(OrderStatusEnum.getStr(orderRecord.getStatus()), null));
+            orderVOS.add(orderVO);
+        }
+        return Result.getInstance(0, "获取成功", (int) selectPage.getTotal(), orderVOS);
     }
 }

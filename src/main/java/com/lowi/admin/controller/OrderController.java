@@ -28,17 +28,24 @@ public class OrderController {
     private OrderService orderService;
 
     @RequestMapping("/submitOrder")
-    public Result submitOrder(@RequestBody OrderDTO orderDTO){
+    public Result submitOrder(@RequestBody OrderDTO orderDTO) {
         try {
             return orderService.submitOrder(orderDTO);
         } catch (Exception e) {
             e.printStackTrace();
-            return Result.getInstance(1,"系统异常");
+            return Result.getInstance(1, "系统异常");
         }
     }
 
     @RequestMapping("/payOrder")
-    public Result payOrder(@RequestBody OrderDTO orderDTO){
+    public Result payOrder(@RequestBody OrderDTO orderDTO) {
         return orderService.payOrder(orderDTO);
     }
+
+    @RequestMapping("/getOrderList")
+    public Result getOrderList(String token, Integer page, Integer limit) {
+        return orderService.getOrderList(token, page, limit);
+    }
+
+
 }

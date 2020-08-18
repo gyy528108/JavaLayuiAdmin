@@ -1,5 +1,12 @@
 package com.lowi.admin.pojo.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
+
 /**
  * OrderVO.java
  * ==============================================
@@ -13,5 +20,15 @@ package com.lowi.admin.pojo.vo;
  * @desc :
  * @since : 2020/8/14 16:19
  */
+@Data
 public class OrderVO {
+    private String orderNo;
+    private Integer productId;
+    private String productName;
+    private BigDecimal price;
+    private String priceUnit;
+    private Integer status;
+    private String statusStr;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
 }

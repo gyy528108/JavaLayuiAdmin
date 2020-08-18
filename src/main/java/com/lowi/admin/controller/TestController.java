@@ -3,12 +3,14 @@ package com.lowi.admin.controller;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.lowi.admin.entity.PageIcon;
 import com.lowi.admin.entity.User;
 import com.lowi.admin.pojo.dto.ServiceResponse;
 import com.lowi.admin.pojo.dto.UserDto;
 import com.lowi.admin.pojo.vo.FeishuAccountVo;
 import com.lowi.admin.pojo.vo.ProductVo;
 import com.lowi.admin.pojo.vo.TreadDemo;
+import com.lowi.admin.service.PageIconService;
 import com.lowi.admin.service.TestService;
 import com.lowi.admin.utils.LockUtil;
 import com.lowi.admin.utils.Result;
@@ -35,6 +37,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -50,6 +55,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicStampedReference;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 /**
@@ -74,16 +81,19 @@ public class TestController {
     private RedisTemplate redisTemplate;
     @Autowired
     TestService testService;
+    @Autowired
+    PageIconService pageIconService;
 
 
     private Logger logger = LoggerFactory.getLogger(TestController.class);
 
     @RequestMapping("/test")
     public Result test() {
-        long l = System.currentTimeMillis() + 10 * 1000;
-        for (int i = 0; i < 5; i++) {
-            testService.lock("13462184511", String.valueOf(l), i);
-        }
+//        long l = System.currentTimeMillis() + 10 * 1000;
+//        for (int i = 0; i < 5; i++) {
+//            testService.lock("13462184511", String.valueOf(l), i);
+//        }
+        insertIcon("E:/icon.txt");
         Result result = new Result();
         result.setCode(0);
         return result;
@@ -110,6 +120,34 @@ public class TestController {
         return null;
     }
 
+    public void insertIcon(String url) {
+        File file = new File(url);
+        String rgex = "\\.(.*?):before";
+        Pattern pattern = Pattern.compile(rgex);
+
+        try {
+            //构造一个BufferedReader类来读取文件
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String s = null;
+            List<PageIcon> pageIcons = new ArrayList<>();
+            //使用readLine方法，一次读一行
+            while ((s = br.readLine()) != null) {
+                Matcher m = pattern.matcher(s);
+                while (m.find()) {
+                    String group = m.group(1);
+                    System.out.println("group = " + group);
+                    PageIcon pageIcon = new PageIcon();
+                    pageIcon.setIcon("fa "+group);
+                    pageIcon.setCreateTime(new Date());
+                    pageIcons.add(pageIcon);
+                }
+            }
+            pageIconService.batchInsert(pageIcons);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static Map<String, Object> getFeishuToken(Integer companyId) {
         CloseableHttpClient httpClient = HttpClients.createDefault();

@@ -1,5 +1,7 @@
 package com.lowi.admin.pojo.vo;
 
+import lombok.Data;
+
 /**
  * InitPageVO.java
  * ==============================================
@@ -13,5 +15,14 @@ package com.lowi.admin.pojo.vo;
  * @desc :
  * @since : 2020/8/17 14:21
  */
+@Data
 public class InitPageVO {
+    private Integer authorityId;
+    private String authorityName;
+    private String menuUrl;
+    private String menuIcon;
+    private Integer parentId;
+    private Boolean admin;
+    private Boolean superAdmin;
+    private Integer pageLevel;
 }

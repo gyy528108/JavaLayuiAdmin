@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Bean;
  */
 @Data
 public class UserVo extends User {
-    private long serialVersionUID = -1L;
     private String sexStr;
 
     public static UserVo fromVo(User user) {

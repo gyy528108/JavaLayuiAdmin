@@ -15,6 +15,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderDao extends BaseMapper<OrderRecord> {
 
+    /**
+     * 支付订单
+     * @auther gengyy
+     * @param id 订单的id
+     * @param version 订单的版本号
+     * @return int 数据是否成功
+     * @date 2020-08-14 15:44
+     * */
     int payOrder(Integer id, Integer version);
 
 }

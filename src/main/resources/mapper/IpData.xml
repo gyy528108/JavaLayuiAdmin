@@ -14,4 +14,11 @@
         SELECT * FROM ip_data a WHERE a.ip_scope_start &lt;= #{ip} AND a.ip_scope_end &gt;= #{ip}
         ORDER BY a.ip_scope_start DESC
     </select>
+
+    <select id="getTables" resultType="java.util.Map">
+        show tables;
+    </select>
+    <select id="getTableData" resultType="java.util.Map">
+        select COLUMN_NAME as name,COLUMN_TYPE as type,COLUMN_COMMENT as comment from Information_schema.columns  where table_Name = #{tableName};
+    </select>
 </mapper>

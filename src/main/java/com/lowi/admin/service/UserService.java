@@ -2,21 +2,25 @@ package com.lowi.admin.service;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lowi.admin.dao.IpDataDao;
 import com.lowi.admin.dao.LoginLogDao;
+import com.lowi.admin.dao.PageInitDao;
 import com.lowi.admin.dao.UserDao;
 import com.lowi.admin.entity.IpData;
 import com.lowi.admin.entity.LoginLog;
+import com.lowi.admin.entity.PageInit;
 import com.lowi.admin.entity.User;
+import com.lowi.admin.pojo.vo.InitPageVO;
+import com.lowi.admin.pojo.vo.MenuInfoVO;
 import com.lowi.admin.pojo.dto.UserDto;
 import com.lowi.admin.pojo.vo.UserVo;
 import com.lowi.admin.utils.*;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +56,12 @@ public class UserService {
     private IpDataDao ipDataDao;
     @Autowired
     private LoginLogDao loginLogDao;
+    @Autowired
+    PageInitDao pageInitDao;
+
+    private static String PAGE_INIT_ADMIN = "page_init_admin";
+    private static String PAGE_INIT_USER = "page_init_user";
+    private static String PAGE_INIT_SUPER_ADMIN = "page_init_super_admin";
 
     public Result registerUser(UserDto userDto) {
         Result responseResult = new Result();
@@ -213,12 +223,12 @@ public class UserService {
         QueryWrapper<LoginLog> queryWrapper = new QueryWrapper<>();
         Page<LoginLog> pageInfo = new Page<>(page, limit);
         queryWrapper.select().eq("user_id", user.getId()).orderByDesc("login_time");
-        IPage<LoginLog> loginLogIPage = loginLogDao.selectPage(pageInfo, queryWrapper);
+        IPage<LoginLog> selectPage = loginLogDao.selectPage(pageInfo, queryWrapper);
         Result responseResult = new Result();
         responseResult.setCode(0);
         responseResult.setMsg("获取成功");
-        responseResult.setData(loginLogIPage.getRecords());
-        responseResult.setCount((int) loginLogIPage.getTotal());
+        responseResult.setData(selectPage.getRecords());
+        responseResult.setCount((int) selectPage.getTotal());
         return responseResult;
     }
 
@@ -231,8 +241,8 @@ public class UserService {
             return responseResult;
         }
         String value = String.valueOf(System.currentTimeMillis() + 10 * 1000);
-        boolean lock = LockUtil.lock(userDto.getMobile(),value);
-        if(!lock){
+        boolean lock = LockUtil.lock(userDto.getMobile(), value);
+        if (!lock) {
             responseResult.setCode(1);
             responseResult.setMsg("请重试");
             return responseResult;
@@ -265,7 +275,7 @@ public class UserService {
                 return responseResult;
             }
         } finally {
-            LockUtil.unlock(userDto.getMobile(),value);
+            LockUtil.unlock(userDto.getMobile(), value);
         }
         responseResult.setCode(0);
         responseResult.setMsg("开户成功");
@@ -314,32 +324,103 @@ public class UserService {
         return responseResult;
     }
 
-    public Result<Map<String, Object>> pageInit(String token) {
-        Result<Map<String, Object>> responseResult = new Result();
+    public Result pageInit(String token) {
         String userInfo = stringRedisTemplate.opsForValue().get(token);
         if (userInfo == null) {
-            responseResult.setCode(1);
-            responseResult.setMsg("请登录");
-            return responseResult;
+            return Result.getInstance(1, "请登录");
         }
         User userVo = JSONUtil.toBean(userInfo, User.class);
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("name", userVo.getUsername());
-        map.put("headImg", Objects.toString(userVo.getHeadImg(), "cssjs/images/logo.png"));
+        String pageInit = null;
+        List<PageInit> pageInits = pageInitDao.selectList(null);
+        List<MenuInfoVO> menuInfo = null;
+        Integer userLevel;
         if (userVo.getParentId() == 0) {
-            map.put("admin", true);
-            responseResult.setCode(0);
-            responseResult.setData(map);
-            responseResult.setMsg("成功");
-            return responseResult;
+            if(userVo.getIsSuperAdmin()){
+                userLevel = 0;
+            }else {
+                userLevel = 1;
+            }
         } else {
-            map.put("admin", false);
-            responseResult.setCode(0);
-            responseResult.setData(map);
-            responseResult.setMsg("成功");
-            return responseResult;
+            userLevel = 2;
         }
+        menuInfo = getChild(0, userLevel, pageInits);
+
+        JSONArray objects = JSONUtil.parseArray(menuInfo);
+        JSONObject homeInfo = JSONUtil.createObj();
+        homeInfo.put("href", "welcome-1.html?t=1");
+        homeInfo.put("title", "首页");
+        JSONObject logoInfo = JSONUtil.createObj();
+        logoInfo.put("href", "");
+        logoInfo.put("image", Objects.toString(userVo.getHeadImg(), "cssjs/images/logo.png"));
+        logoInfo.put("title", userVo.getUsername());
+        Map<String, Object> map = new HashMap<>(4);
+        map.put("homeInfo", homeInfo);
+        map.put("logoInfo", logoInfo);
+        map.put("menuInfo", objects);
+        if (userVo.getParentId() == 0) {
+            return Result.getInstance(0, "成功", map);
+        } else {
+            return Result.getInstance(0, "成功", map);
+        }
+    }
+
+    public List<MenuInfoVO> getChild(Integer id, Integer userLevel, List<PageInit> allMenu) {
+        //子菜单
+        List<MenuInfoVO> childList = new ArrayList<MenuInfoVO>();
+        for (PageInit nav : allMenu) {
+            // 遍历所有节点，将所有菜单的父id与传过来的根节点的id比较
+            //相等说明：为该根节点的子节点。
+            if (id.equals(nav.getParentId())) {
+                MenuInfoVO menuInfoVO = new MenuInfoVO();
+                if (userLevel == 0) {
+                    menuInfoVO.setHref(nav.getHref());
+                    menuInfoVO.setIcon(nav.getIcon());
+                    menuInfoVO.setTarget(nav.getTarget());
+                    menuInfoVO.setTitle(nav.getTitle());
+                    menuInfoVO.setParentId(nav.getParentId());
+                    menuInfoVO.setId(nav.getId());
+                    childList.add(menuInfoVO);
+                    continue;
+                }
+                if (userLevel == 1) {
+                    if (nav.getIsSuperAdmin()) {
+                        continue;
+                    }
+                    menuInfoVO.setHref(nav.getHref());
+                    menuInfoVO.setIcon(nav.getIcon());
+                    menuInfoVO.setTarget(nav.getTarget());
+                    menuInfoVO.setTitle(nav.getTitle());
+                    menuInfoVO.setParentId(nav.getParentId());
+                    menuInfoVO.setId(nav.getId());
+                    childList.add(menuInfoVO);
+                    continue;
+                }
+                if (userLevel == 2) {
+                    if (nav.getIsAdmin()) {
+                        continue;
+                    }
+                    menuInfoVO.setHref(nav.getHref());
+                    menuInfoVO.setIcon(nav.getIcon());
+                    menuInfoVO.setTarget(nav.getTarget());
+                    menuInfoVO.setTitle(nav.getTitle());
+                    menuInfoVO.setParentId(nav.getParentId());
+                    menuInfoVO.setId(nav.getId());
+                    childList.add(menuInfoVO);
+                    continue;
+                }
+
+
+            }
+        }
+        //递归
+        for (MenuInfoVO nav : childList) {
+            nav.setChild(getChild(nav.getId(), userLevel, allMenu));
+        }
+        //如果节点下没有子节点，返回一个空List（递归退出）
+        if (childList.size() == 0) {
+            return new ArrayList<MenuInfoVO>();
+        }
+        return childList;
     }
 
     public Result getUserList(String token, Integer page, Integer limit, String phone, String userName) {
@@ -354,13 +435,15 @@ public class UserService {
         }
         queryWrapper.select().eq("parent_id", userVo.getId()).orderByDesc("create_time");
         Page<User> pageInfo = new Page<>(page, limit);
-        IPage<User> userIPage = userDao.selectPage(pageInfo, queryWrapper);
-        List<UserVo> userVos = userIPage.getRecords().stream().map(user -> UserVo.fromVo(user)).collect(Collectors.toList());
+        IPage<User> userListPage = userDao.selectPage(pageInfo, queryWrapper);
+        List<UserVo> userVos = userListPage.getRecords().stream().map(user -> UserVo.fromVo(user)).collect(Collectors.toList());
         Result responseResult = new Result();
         responseResult.setCode(0);
         responseResult.setMsg("获取成功");
         responseResult.setData(userVos);
-        responseResult.setCount((int) userIPage.getTotal());
+        responseResult.setCount((int) userListPage.getTotal());
         return responseResult;
     }
+
+
 }

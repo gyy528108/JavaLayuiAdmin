@@ -17,10 +17,25 @@ import lombok.Getter;
  */
 @Getter
 public enum OrderStatusEnum {
+    //已取消
     DELAY(-1, "已取消"),
+    //未支付
     NORMAL(0, "未支付"),
+    //已支付
     PAY(1, "已支付"),
     ;
+
+    public static String getStr(Integer status) {
+        if (status == null) {
+            return null;
+        }
+        for (OrderStatusEnum statusEnum : values()) {
+            if (status.equals(statusEnum.getStatus())) {
+                return statusEnum.getMsg();
+            }
+        }
+        return null;
+    }
 
     OrderStatusEnum(Integer status, String msg) {
         this.status = status;

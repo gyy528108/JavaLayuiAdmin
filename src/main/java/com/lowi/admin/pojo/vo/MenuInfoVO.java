@@ -1,4 +1,4 @@
-package com.lowi.admin.pojo;
+package com.lowi.admin.pojo.vo;
 
 import lombok.Data;
 
@@ -24,4 +24,6 @@ public class MenuInfoVO {
     private String icon;
     private String target;
     private String title;
+    private Integer parentId;
+    private Integer id;
 }

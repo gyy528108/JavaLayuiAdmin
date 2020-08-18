@@ -3,6 +3,7 @@ package com.lowi.admin.dao;
 import com.lowi.admin.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lowi.admin.pojo.dto.UserDto;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -16,7 +17,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserDao extends BaseMapper<User> {
 
-    User loginUser(String mobile, String password);
+    /**
+     * 用户登录
+     * @param mobile 手机号
+     * @param password 密码
+     * @auther gengyy
+     * @date 2020-08-17 9:52
+     * @return 用户登录信息
+     * */
+    User loginUser(@Param("mobile") String mobile,@Param("password") String password);
 
     void updateLoginCount(UserDto user);
 }

@@ -31,8 +31,13 @@ public class User implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     /**
-     *
+     * 是否是超级管理员
+     */
+    private Boolean isSuperAdmin;
+    /**
+     * 父id
      */
     private Integer parentId;
 

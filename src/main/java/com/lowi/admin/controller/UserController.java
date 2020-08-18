@@ -4,8 +4,10 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.lowi.admin.dao.IpDataDao;
 import com.lowi.admin.entity.IpData;
+import com.lowi.admin.entity.PageIcon;
 import com.lowi.admin.entity.User;
 import com.lowi.admin.pojo.dto.UserDto;
+import com.lowi.admin.service.PageIconService;
 import com.lowi.admin.service.UserService;
 import com.lowi.admin.utils.LoginValidaUtils;
 import com.lowi.admin.utils.Result;
@@ -30,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * UserController.java
@@ -54,6 +58,8 @@ public class UserController {
     IpDataDao ipDataDao;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    PageIconService pageIconService;
 
     @RequestMapping("/register")
     public Result register(@RequestBody @Validated(UserGroup.UserRegister.class) UserDto userDto, Errors errors) {
@@ -152,12 +158,9 @@ public class UserController {
     }
 
     @RequestMapping("/pageInit")
-    public Result<Map<String, Object>> pageInit(@RequestBody UserDto userDto) {
-        Result<Map<String, Object>> responseResult = new Result<Map<String, Object>>();
+    public Result pageInit(@RequestBody UserDto userDto) {
         if (userDto.getToken() == null) {
-            responseResult.setCode(1);
-            responseResult.setMsg("请登录");
-            return responseResult;
+            return Result.getInstance(1, "请登录");
         }
         return userService.pageInit(userDto.getToken());
     }
@@ -311,13 +314,15 @@ public class UserController {
     }
 
     public static void main(String[] args) {
-        File file = new File("E:/11.txt");
+//        File file = new File("E:/11.txt");
+//        insertIcon("E:/icon.txt");
+
     }
 
 
     //    @RequestMapping("/insertIp")
     public void insertIp() {
-        File file = new File("D:/GoogleDown/ip.txt");
+        File file = new File("E:/icon.txt");
         txt2String(file);
     }
 
