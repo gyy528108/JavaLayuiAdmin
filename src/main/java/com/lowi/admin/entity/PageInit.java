@@ -40,7 +40,7 @@ public class PageInit implements Serializable {
     private Boolean isAdmin;
 
     /**
-     * 等级 0 最高等级
+     * 等级 0 最高等级  弃用字段
      */
     private Integer level;
 

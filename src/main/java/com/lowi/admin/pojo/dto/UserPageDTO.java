@@ -22,6 +22,8 @@ public class UserPageDTO {
 
     private String token;
 
+    private Integer id;
+
     private Boolean isSuperAdmin;
     /**
      * 是否只有admin账户查看 0 否 1 是

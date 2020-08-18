@@ -94,8 +94,32 @@ public class UserPageService {
         return Result.getInstance(0, "获取成功", menuLevel);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Result editUserPage(UserPageDTO userPageDTO) {
-
-        return null;
+        PageInit pageInit = pageInitDao.selectById(userPageDTO.getId());
+        if (pageInit == null) {
+            return Result.getInstance(0, "修改信息不存在");
+        }
+        //传递了父id并且 修改了页面的父id，则做处理
+        if (userPageDTO.getParentId() != null && !userPageDTO.getParentId().equals(pageInit.getParentId())) {
+            PageInit parentPageInit = pageInitDao.selectById(userPageDTO.getParentId());
+            if (parentPageInit == null) {
+                return Result.getInstance(0, "修改信息父页面不存在");
+            }
+        }
+        PageInit page = new PageInit();
+        page.setTitle(userPageDTO.getTitle());
+        page.setIsSuperAdmin(userPageDTO.getIsSuperAdmin());
+        page.setIsAdmin(userPageDTO.getIsAdmin());
+        page.setParentId(userPageDTO.getParentId());
+        page.setId(userPageDTO.getId());
+        page.setIcon(userPageDTO.getIcon());
+        int update = 0;
+        try {
+            update = pageInitDao.updateById(page);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Result.getInstance(update == 0 ? 1 : 0, update == 0 ? "系统异常，请稍后重试" : "更新成功");
     }
 }
